@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">getninjastest</string>
+
+    <string name="tab_title_1">Disponíneis</string>
+    <string name="tab_title_2">Aceitos</string>
+    <string name="title_activity_details">DetailsActivity</string>
+</resources>

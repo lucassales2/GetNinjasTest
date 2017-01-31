@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="item"
+            type="lucassales.com.getninjastest.ui.viewmodel.ListItemViewModel" />
+    </data>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/item_background"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:padding="@dimen/activity_horizontal_margin">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginTop="4dp"
+            android:text="@{item.title}"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/textsize_large" />
+
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/title"
+            android:background="@android:drawable/divider_horizontal_bright" />
+
+        <ImageView
+            android:id="@+id/imageViewUser"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_below="@+id/divider"
+            app:state="@{item.state}"
+            android:src="@drawable/ic_user_silhouette"
+            android:layout_marginTop="@dimen/activity_vertical_margin" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/imageViewUser"
+            android:layout_alignTop="@+id/imageViewUser"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_toEndOf="@+id/imageViewUser"
+            android:layout_toRightOf="@+id/imageViewUser"
+            android:gravity="center_vertical"
+            android:text="@{item.userName}"
+            android:textColor="@color/blackLight"
+            android:textSize="@dimen/textsize_normal" />
+
+        <ImageView
+            android:id="@+id/imageViewDate"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_below="@+id/divider"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            app:state="@{item.state}"
+            android:src="@drawable/ic_calendar"
+            android:layout_toLeftOf="@+id/textView" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/imageViewDate"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/imageViewDate"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:gravity="center_vertical"
+            android:text="@{item.stringDate}"
+            android:textColor="@color/blackLight"
+            android:textSize="@dimen/textsize_normal" />
+
+        <ImageView
+            android:id="@+id/imageViewAddress"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_below="@+id/imageViewUser"
+            android:src="@drawable/ic_location"
+            app:state="@{item.state}"
+            android:layout_marginTop="@dimen/activity_vertical_margin" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@{item.adress}"
+            android:textColor="@color/blackLight"
+            android:textSize="@dimen/textsize_normal"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_alignBottom="@+id/imageViewAddress"
+            android:layout_toRightOf="@+id/imageViewAddress"
+            android:layout_toEndOf="@+id/imageViewAddress"
+            android:layout_alignTop="@+id/imageViewAddress" />
+
+    </RelativeLayout>
+</layout>

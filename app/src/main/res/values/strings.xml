@@ -4,4 +4,14 @@
     <string name="tab_title_1">Disponíneis</string>
     <string name="tab_title_2">Aceitos</string>
     <string name="title_activity_details">DetailsActivity</string>
+    <string name="client_contact">Contato do Cliente</string>
+    <string name="details_text_lead">Fale com o cliente o quanto antes</string>
+    <string name="details_text_offer">Aceite o pedido para destravar o contato!</string>
+    <string name="google_maps_api_key">API_KEY</string>
+    <string name="whatsapp">Whatsapp</string>
+    <string name="accept">Aceitar</string>
+    <string name="call">Ligar</string>
+    <string name="decline">Recusar</string>
+    <string name="network_error">Houve um erro ao se conectar, verifique suas condições de internet</string>
+    <string name="unexpected_error">Houve um erro inesperado</string>
 </resources>

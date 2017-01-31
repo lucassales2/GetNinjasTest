@@ -6,6 +6,8 @@
         <variable
             name="item"
             type="lucassales.com.getninjastest.ui.viewmodel.ListItemViewModel" />
+
+        <import type="lucassales.com.getninjastest.ui.viewmodel.ListItemViewModel.State"/>
     </data>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -39,7 +41,7 @@
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
             android:layout_below="@+id/divider"
-            app:state="@{item.state}"
+            app:imageViewColor="@{item.state == State.Read ? @color/grey : item.state == State.Unread ? @color/blue : @color/green}"
             android:src="@drawable/ic_user_silhouette"
             android:layout_marginTop="@dimen/activity_vertical_margin" />
 
@@ -63,7 +65,7 @@
             android:layout_height="@dimen/icon_size"
             android:layout_below="@+id/divider"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            app:state="@{item.state}"
+            app:imageViewColor="@{item.state == State.Read ? @color/grey : item.state == State.Unread ? @color/blue : @color/green}"
             android:src="@drawable/ic_calendar"
             android:layout_toLeftOf="@+id/textView" />
 
@@ -87,7 +89,7 @@
             android:layout_height="@dimen/icon_size"
             android:layout_below="@+id/imageViewUser"
             android:src="@drawable/ic_location"
-            app:state="@{item.state}"
+            app:imageViewColor="@{item.state == State.Read ? @color/grey : item.state == State.Unread ? @color/blue : @color/green}"
             android:layout_marginTop="@dimen/activity_vertical_margin" />
 
         <TextView

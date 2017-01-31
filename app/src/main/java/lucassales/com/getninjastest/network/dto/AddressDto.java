@@ -12,6 +12,10 @@ public class AddressDto {
     private String uf;
     private Geolocation geolocation;
 
+    public Geolocation getGeolocation() {
+        return geolocation;
+    }
+
     public String getNeighborhood() {
         return neighborhood;
     }
@@ -28,7 +32,7 @@ public class AddressDto {
         return uf;
     }
 
-    private class Geolocation {
+    public class Geolocation {
         private double latitude;
         private double longitude;
 

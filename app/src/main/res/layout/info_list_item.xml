@@ -1,0 +1,51 @@
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="info"
+            type="lucassales.com.getninjastest.network.dto.InfoDto"/>
+        <variable
+            name="isLead"
+            type="boolean"/>
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="@dimen/icon_size_small"
+            android:layout_height="@dimen/icon_size_small"
+            android:src="@drawable/ic_rounded_info"
+            app:imageViewColor="@{isLead ? @color/green : @color/blue}"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@{info.label}"
+                android:textColor="@color/blackLight"
+                android:textSize="@dimen/textsize_normal"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="@{info.valuesString}"
+                android:textColor="@color/grey_dark"
+                android:textSize="@dimen/textsize_normal" />
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

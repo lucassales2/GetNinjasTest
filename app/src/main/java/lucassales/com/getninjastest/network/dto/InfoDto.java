@@ -36,6 +36,19 @@ public class InfoDto {
         this.mValues = mValue;
     }
 
+    public String getValuesString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < mValues.size(); i++) {
+            String value = mValues.get(i);
+            if (i == 0) {
+                builder.append(value);
+            } else {
+                builder.append(", " + value);
+            }
+        }
+        return builder.toString();
+    }
+
     public static class InfoValuesDeserilizer implements JsonDeserializer<InfoDto> {
 
         @Override

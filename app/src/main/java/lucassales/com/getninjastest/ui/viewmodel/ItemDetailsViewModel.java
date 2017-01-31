@@ -10,6 +10,8 @@ import lucassales.com.getninjastest.network.dto.InfoDto;
 
 public class ItemDetailsViewModel {
 
+    private final double latitude;
+    private final double longitude;
     private String title;
     private String user;
     private String address;
@@ -21,13 +23,12 @@ public class ItemDetailsViewModel {
     private String linkAccept;
     private String linkReject;
 
-    public ItemDetailsViewModel(String address, long distance, String email, List<InfoDto> infos, boolean isLead, String phone, String title, String user, String linkAccept, String linkReject) {
-        this(address, distance, email, infos, isLead, phone, title, user);
+    public ItemDetailsViewModel(String address, long distance, String email, List<InfoDto> infos, boolean isLead, String phone, String title, String user, double latitude, double longitude, String linkAccept, String linkReject) {
+        this(address, distance, email, infos, isLead, phone, title, user, latitude, longitude);
         this.linkAccept = linkAccept;
         this.linkReject = linkReject;
     }
-
-    public ItemDetailsViewModel(String address, long distance, String email, List<InfoDto> infos, boolean isLead, String phone, String title, String user) {
+    public ItemDetailsViewModel(String address, long distance, String email, List<InfoDto> infos, boolean isLead, String phone, String title, String user, double latitude, double longitude) {
         this.address = address;
         this.distance = distance;
         this.email = email;
@@ -36,6 +37,16 @@ public class ItemDetailsViewModel {
         this.phone = phone;
         this.title = title;
         this.user = user;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
     }
 
     public String getLinkAccept() {
@@ -54,8 +65,13 @@ public class ItemDetailsViewModel {
         return address;
     }
 
-    public long getDistance() {
-        return distance;
+    public String getDistance() {
+        if (distance / 1000 >= 1) {
+            return String.format("a %d Km de você", (int) distance / 1000);
+        } else {
+            return String.format("a %d metros de você", distance);
+        }
+
     }
 
     public String getEmail() {

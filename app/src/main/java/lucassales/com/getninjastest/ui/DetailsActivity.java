@@ -1,68 +1,197 @@
 package lucassales.com.getninjastest.ui;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Toast;
 
-import java.util.List;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
+import java.net.UnknownHostException;
+
+import lucassales.com.getninjastest.BR;
 import lucassales.com.getninjastest.R;
-import lucassales.com.getninjastest.network.ServiceGenerator;
-import lucassales.com.getninjastest.network.dto.InfoDto;
-import lucassales.com.getninjastest.network.response.DetailsResponse;
+import lucassales.com.getninjastest.Utility;
+import lucassales.com.getninjastest.ui.presenter.ItemDetailsPresenter;
+import lucassales.com.getninjastest.ui.presenter.ItemDetailsPresenterListener;
 import lucassales.com.getninjastest.ui.viewmodel.ItemDetailsViewModel;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends AppCompatActivity implements ItemDetailsPresenterListener, OnMapReadyCallback {
 
     public static final String PATH = "path";
     public static final String IS_LEAD = "isLead";
+    private static final int PERMISSION_CALL = 123;
+    private static final int PERMISSION_CALL_WAHTS_APP = 124;
     private boolean isLead;
+
+    private ItemDetailsPresenter presenter;
+    private ViewDataBinding viewDataBinding;
+    private RecyclerView recyclerView;
+    private GoogleMap googleMap;
+    private ItemDetailsViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        viewDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_details);
         isLead = getIntent().getBooleanExtra(IS_LEAD, false);
-        startRequest(getIntent().getStringExtra(PATH));
+        presenter = new ItemDetailsPresenter(this, getIntent().getStringExtra(PATH), isLead);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        setSupportActionBar(toolbar);
+
+
     }
 
-    private void startRequest(String path) {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.onResume();
+    }
 
-        ServiceGenerator.getGetNinjasApiServiceInstance().getDetailsResponse(path)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(new Function<DetailsResponse, ItemDetailsViewModel>() {
-                    @Override
-                    public ItemDetailsViewModel apply(DetailsResponse detailsResponse) throws Exception {
-                        String address = detailsResponse.get_embedded().getAddress().getNeighborhood() + " - " + detailsResponse.get_embedded().getAddress().getCity();
-                        long distance = detailsResponse.getDistance();
-                        String email = detailsResponse.get_embedded().getUser().getEmail();
-                        List<InfoDto> infoDtos = detailsResponse.get_embedded().getInfo();
-                        String phone = detailsResponse.get_embedded().getUser().get_embedded().getPhones().get(0).getNumber();
-                        String title = detailsResponse.getTitle();
-                        String user = detailsResponse.get_embedded().getUser().getName();
-                        if (isLead) {
-                            return new ItemDetailsViewModel(address, distance, email, infoDtos, true, phone, title, user);
-                        } else {
-                            String linkAccept = detailsResponse.get_links().get("accept").getHref();
-                            String linkReject = detailsResponse.get_links().get("reject").getHref();
-                            return new ItemDetailsViewModel(address, distance, email, infoDtos, false, phone, title, user, linkAccept, linkReject);
+    @Override
+    protected void onPause() {
+        super.onPause();
+        presenter.onPause();
+    }
+
+    @Override
+    public void onItemLoaded(final ItemDetailsViewModel viewModel) {
+        this.viewModel = viewModel;
+        viewDataBinding.setVariable(BR.details, this.viewModel);
+        recyclerView.setAdapter(new InfoAdapter(viewModel.getInfos(), isLead));
+        findViewById(R.id.content_layout).setVisibility(View.VISIBLE);
+        findViewById(R.id.footer).setVisibility(View.VISIBLE);
+        LatLng latLng = new LatLng(viewModel.getLatitude(), viewModel.getLongitude());
+        googleMap.addMarker(new MarkerOptions().position(latLng));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+        findViewById(R.id.footer_buttonLeft).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isLead) {
+                    if (!ActivityCompat.shouldShowRequestPermissionRationale(DetailsActivity.this,
+                            Manifest.permission.CALL_PHONE)) {
+
+                        ActivityCompat.requestPermissions(DetailsActivity.this,
+                                new String[]{Manifest.permission.CALL_PHONE},
+                                PERMISSION_CALL);
+
+                    }
+
+                } else {
+                    Intent intentForLink = Utility.createIntentForLink(DetailsActivity.this, DetailsActivity.this.viewModel.getLinkReject());
+                    intentForLink.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intentForLink);
+                }
+            }
+        });
+
+        findViewById(R.id.footer_buttonRight).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isLead) {
+                    if (!ActivityCompat.shouldShowRequestPermissionRationale(DetailsActivity.this,
+                            Manifest.permission.CALL_PHONE)) {
+
+                        ActivityCompat.requestPermissions(DetailsActivity.this,
+                                new String[]{Manifest.permission.CALL_PHONE},
+                                PERMISSION_CALL_WAHTS_APP);
+
+                    }
+
+                } else {
+                    Intent intentForLink = Utility.createIntentForLink(DetailsActivity.this, DetailsActivity.this.viewModel.getLinkAccept());
+                    intentForLink.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intentForLink);
+                }
+            }
+        });
+
+    }
+
+    @Override
+    public void onError(Throwable t) {
+        if (t instanceof UnknownHostException) {
+            Toast.makeText(this, R.string.network_error, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.unexpected_error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_CALL: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + viewModel.getPhone()));
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+                    startActivity(intent);
+
+                }
+                break;
+            }
+            case PERMISSION_CALL_WAHTS_APP: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    PackageManager pm = getPackageManager();
+
+
+                    try {
+
+                        PackageInfo info = pm.getPackageInfo("com.whatsapp", PackageManager.GET_META_DATA);
+                        Intent mIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + viewModel.getPhone()));
+                        mIntent.setPackage("com.whatsapp");
+                        mIntent.putExtra("sms_body", "text");
+                        mIntent.putExtra("chat", true);
+
+                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                            return;
                         }
-                    }
-                })
-                .subscribe(new Consumer<ItemDetailsViewModel>() {
-                    @Override
-                    public void accept(ItemDetailsViewModel itemDetailsViewModel) throws Exception {
-                        //test
-                    }
-                });
 
+                        startActivity(mIntent);
+
+                    } catch (PackageManager.NameNotFoundException e) {
+                        Toast.makeText(DetailsActivity.this, "WhatsApp não está instalado", Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                    break;
+
+                }
+            }
+
+
+        }
     }
-
 }

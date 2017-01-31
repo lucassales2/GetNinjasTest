@@ -2,6 +2,11 @@ package lucassales.com.getninjastest;
 
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.BindingAdapter;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
+import android.widget.ImageView;
 
 import lucassales.com.getninjastest.network.ServiceGenerator;
 import lucassales.com.getninjastest.ui.DetailsActivity;
@@ -28,15 +33,24 @@ public class Utility {
         } else if (path.startsWith("lead-")) {
             intent = new Intent(context, DetailsActivity.class);
             intent.putExtra(DetailsActivity.PATH, path);
-            intent.getBooleanExtra(DetailsActivity.IS_LEAD, true);
+            intent.putExtra(DetailsActivity.IS_LEAD, true);
         } else if (path.startsWith("offer-")) {
             intent = new Intent(context, DetailsActivity.class);
             intent.putExtra(DetailsActivity.PATH, path);
-            intent.getBooleanExtra(DetailsActivity.IS_LEAD, false);
+            intent.putExtra(DetailsActivity.IS_LEAD, false);
         } else {
             intent = new Intent();
         }
 
         return intent;
+    }
+
+    @BindingAdapter({"bind:imageViewColor"})
+    public static void setImageViewColor(ImageView imageView, @ColorInt int color) {
+        Drawable drawable = imageView.getDrawable();
+        if (drawable != null) {
+            drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+            imageView.setImageDrawable(drawable);
+        }
     }
 }
